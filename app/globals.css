@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+:root {
+  /* Purples */
+  --color-purple-900: #77386E;
+  --color-purple-700: #904B86;
+  --color-purple-500: #AE62A4;
+  --color-purple-300: #D7A2CA;
+  --color-purple-100: #E9C5DE;
+
+  /* Greens */
+  --color-green-900: #387741;
+  --color-green-700: #4B9055;
+  --color-green-500: #62AE6C;
+  --color-green-300: #A2D7AF;
+  --color-green-100: #C5E9D0;
+
+  /* Neutrals */
+  --color-cream: #FEF2E0;
+  --color-ink: #171717;
+  --color-paper: #FFFFFF;
+
+  --background: var(--color-paper);
+  --foreground: var(--color-ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-purple-900: #77386E;
+  --color-purple-700: #904B86;
+  --color-purple-500: #AE62A4;
+  --color-purple-300: #D7A2CA;
+  --color-purple-100: #E9C5DE;
+
+  --color-green-900: #387741;
+  --color-green-700: #4B9055;
+  --color-green-500: #62AE6C;
+  --color-green-300: #A2D7AF;
+  --color-green-100: #C5E9D0;
+
+  --color-cream: #FEF2E0;
+  --color-ink: #171717;
+  --color-paper: #FFFFFF;
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+}
+
+::selection {
+  background: var(--color-purple-500);
+  color: var(--color-paper);
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--color-purple-100); }
+::-webkit-scrollbar-thumb { background: var(--color-purple-900); border-radius: 999px; }
+
+/* Risograph dot screen. Used on EVERY section so the texture is consistent.
+   Inherits currentColor, so it reads dark on light blocks and light on dark ones. */
+.dots {
+  position: relative;
+}
+.dots::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  background-image: radial-gradient(currentColor 1.4px, transparent 1.5px);
+  background-size: 15px 15px;
+}
+/* keep section content above the dot layer */
+.dots > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hard poster shadow */
+.shadow-poster { box-shadow: 6px 6px 0 0 var(--color-ink); }
+.shadow-poster-sm { box-shadow: 3px 3px 0 0 var(--color-ink); }
+.shadow-poster-light { box-shadow: 6px 6px 0 0 var(--color-cream); }
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 26s linear infinite;
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-18px) rotate(6deg); }
+}
+.animate-float-slow {
+  animation: float-slow 7s ease-in-out infinite;
+}
+
+@keyframes float-slower {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(14px) rotate(-8deg); }
+}
+.animate-float-slower {
+  animation: float-slower 9s ease-in-out infinite;
+}
+
+@keyframes blob-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+.animate-blob {
+  animation: blob-pulse 8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-float-slow,
+  .animate-float-slower,
+  .animate-blob {
+    animation: none;
+  }
+}
