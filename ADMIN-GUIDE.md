@@ -24,9 +24,10 @@ The short version: **all the words live in one file (`lib/data.ts`) and all the 
 14. [The sliding words on the landing page](#14-the-sliding-words-on-the-landing-page)
 15. [Logo and favicon](#15-logo-and-favicon)
 16. [Turning on the contact form email](#16-turning-on-the-contact-form-email)
-17. [Publishing your changes](#17-publishing-your-changes)
-18. [When something breaks](#18-when-something-breaks)
-19. [One page cheat sheet](#19-one-page-cheat-sheet)
+17. [Cookies and analytics](#17-cookies-and-analytics)
+18. [Publishing your changes](#18-publishing-your-changes)
+19. [When something breaks](#19-when-something-breaks)
+20. [One page cheat sheet](#20-one-page-cheat-sheet)
 
 ---
 
@@ -233,12 +234,13 @@ Every event, past and upcoming, is one block inside the `events` list in `data.t
 | `endDate` | no | Only for events that run more than one day. Same format. Leave it out for a single day event. |
 | `time` | yes | Free text, shown as written. Examples: `"19:00 to 22:00"` or `"3 day jam, Fri 18:00 to Sun 20:00"`. |
 | `location` | yes | Venue and city. Write `"To be announced, İstanbul"` if you do not know yet. |
-| `category` | yes | **Exactly one of these four**: `"Game Jam"`, `"Workshop"`, `"Talk"`, `"Meetup"`. Anything else stops the site building. This shows as the purple pill at the top of the details box. |
+| `category` | yes | **Exactly one of these**: `"Game Jam"`, `"Workshop"`, `"Talk"`, `"Meetup"`, `"Game Night"`, `"Pocket Jam"`. Anything else stops the site building. To add a new one, add it to the `category` line in the `EventItem` type near the top of `data.ts`. This shows as the purple pill at the top of the details box. |
 | `summary` | yes | One or two sentences. This is what appears on the event card in the list. Keep it to about 140 characters, longer text gets cut off with dots. |
 | `description` | yes | The full paragraph at the top of the event page. Two to four sentences is the sweet spot. |
 | `cover` | yes | Path to the cover image. See the image table above. |
 | `status` | yes | Either `"upcoming"` or `"past"`. This one field decides almost everything about how the event is displayed. |
-| `joinUrl` | upcoming only | Where the green Join button sends people. Registration form, Linktree, ticket page, anything. |
+| `joinUrl` | upcoming only | One registration link. The button reads "Join this event". See "Registration links" below. |
+| `joinLinks` | upcoming only | Several registration buttons with your own labels, for example participants and mentors. Use this instead of `joinUrl`. |
 | `attendeeCount` | past only | A plain number, no quotes. Shows as "42 people came". |
 | `recapSummary` | past only | A sentence or two on how it went, shown in the purple "How it went" box. |
 | `recapPhotos` | past only | The photo strip on the event page. See below. |
@@ -272,12 +274,44 @@ Copy an existing upcoming event, paste it into the `events` list, and edit. A co
 
 Order does not matter. The site sorts upcoming events by date automatically, soonest first, and past events newest first.
 
+### Registration links
+
+Every event has its own registration link, so each jam or meetup can point at its own Google Form. Nothing is shared between events: change one and the others are untouched. Two events can still point at the same form if you want them to, just paste the same link into both.
+
+**One form for the event.** Add a `joinUrl` line. The green button reads "Join this event".
+
+```ts
+status: "upcoming",
+joinUrl: "https://forms.gle/your-tea-time-form",
+```
+
+**Several forms for the event.** A jam often needs one form for participants and another for mentors or volunteers. Use `joinLinks` instead, and write each button's label yourself. The first button is green, the others are white. `note` is optional, it adds a short line under the button.
+
+```ts
+status: "upcoming",
+joinLinks: [
+  { label: "Join as a participant", url: "https://forms.gle/participants", note: "Coders, artists, writers, beginners" },
+  { label: "Join as a mentor", url: "https://forms.gle/mentors", note: "Industry folks who want to guide a team" },
+  { label: "Volunteer on the day", url: "https://forms.gle/volunteers" },
+],
+```
+
+**No form yet.** Leave both out. Instead of a button that goes nowhere, the page says "Registration opens soon". The moment you add a link, the button appears. Every new upcoming event has a reminder line ready for you:
+
+```ts
+// joinUrl: "paste this event's registration form link here",
+```
+
+Delete the two slashes at the start, paste the link between the quotes, and save.
+
+Where to get the link: in Google Forms press **Send**, choose the link tab, tick "Shorten URL", and copy it. Do not copy the address bar while you are editing the form, that link only works for you.
+
 ### Turning an event into a past event
 
 This is the routine after every event, and it takes about five minutes.
 
 1. Change `status: "upcoming"` to `status: "past"`.
-2. Delete the `joinUrl` line. It is not needed any more and the Join box disappears on its own.
+2. Delete the `joinUrl` or `joinLinks` lines. They are not needed any more and the Join box disappears on its own.
 3. Add `attendeeCount:` with the real number.
 4. Add `recapSummary:` with a sentence about how it went.
 5. Upload the photos to `public/images/gallery/`, add them to the `gallery` list with this event's slug in `eventSlug` (see [section 9](#9-the-photo-gallery)), then add the recap line below.
@@ -651,7 +685,40 @@ SMTP_PASS=your-app-password-here
 
 ---
 
-## 17. Publishing your changes
+## 17. Cookies and analytics
+
+The site asks every visitor about cookies the first time they arrive, following the Turkish KVKK cookie guide and the EU rules: "Accept all" and "Reject all" look exactly the same and sit side by side, nothing optional is switched on in advance, and anyone can change their mind later from the **Cookie settings** link at the bottom of every page. The answer is remembered for six months, then they are asked again.
+
+The full cookie policy lives at `/cookies` and is linked from the banner and the footer.
+
+**What it covers right now.** Only one cookie is ever set without asking, `htl_consent`, which remembers the visitor's answer. That is allowed without permission because the site needs it. Nothing else runs until someone says yes.
+
+### Turning on Google Analytics
+
+The banner is ready for analytics, but nothing is collected until you add your Google Analytics ID.
+
+1. Create a property at [analytics.google.com](https://analytics.google.com) and copy the Measurement ID. It looks like `G-XXXXXXXXXX`.
+2. Add it to `.env.local` on your computer:
+   ```
+   NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+   ```
+3. Add the same line on your host, for Vercel under Settings then Environment Variables, and redeploy.
+
+Even then, analytics only runs for visitors who accept it. People who reject it send nothing to Google at all.
+
+### When the cookies change
+
+If you ever add something new that sets cookies, such as a second analytics tool, an embedded video or an Instagram feed, three things need updating together. Ask for help the first time, it is easy to miss one:
+
+1. Add a row for each new cookie to the table in `app/cookies/page.tsx`.
+2. Change `LAST_UPDATED` at the top of that same file.
+3. Raise `CONSENT_VERSION` by one in `lib/consent.ts`, so everyone is asked again. An old yes does not cover cookies it was never asked about.
+
+> The cookie policy was written to follow the published KVKK and EU guidance, but it is not legal advice. If the club ever collects more than simple visit counts, have someone qualified look it over.
+
+---
+
+## 18. Publishing your changes
 
 Editing on your computer only changes what you see at localhost:3000. To get it onto the real hack-the-loop.com:
 
@@ -667,13 +734,13 @@ If it prints errors, fix them before going further. A build error means the live
 
 **Step 3. Push it live.** How this works depends on how the site is hosted. The usual setup is [Vercel](https://vercel.com), which is free for a site like this: you connect the project to a GitHub repository once, and after that every change you push to GitHub goes live automatically in about a minute.
 
-If it is not set up yet, the one time steps are: put the project on GitHub, create a Vercel account, click Import Project and pick the repository, add the six email settings from section 16 under Settings then Environment Variables, and point the hack-the-loop.com domain at it under Settings then Domains.
+If it is not set up yet, the one time steps are: put the project on GitHub, create a Vercel account, click Import Project and pick the repository, add the six email settings from section 16, and the analytics ID from section 17 if you use one, under Settings then Environment Variables, and point the hack-the-loop.com domain at it under Settings then Domains.
 
 **A habit worth having:** make your edits in small batches and publish often. Twenty small changes published one at a time are far easier to untangle than one big change that broke something somewhere.
 
 ---
 
-## 18. When something breaks
+## 19. When something breaks
 
 | What you see | What it means | Fix |
 |---|---|---|
@@ -684,9 +751,13 @@ If it is not set up yet, the one time steps are: put the project on GitHub, crea
 | An image slot is empty or shows a broken icon | Wrong path | Check the path starts with `/images/` and not `/public/images/`. Check the spelling and capitals match the real filename exactly. `Photo.JPG` and `photo.jpg` are different files. |
 | Image file is there but shows nothing | Probably a HEIC renamed to .jpg | Renaming does not convert. Re-export it properly from Preview. |
 | An event is missing from the calendar | Date format | It must be `"YYYY-MM-DD"`. `"2026-3-6"` and `"06/03/2026"` both fail. |
-| Build fails mentioning `category` | An invalid category | It has to be exactly `"Game Jam"`, `"Workshop"`, `"Talk"`, or `"Meetup"`, capitals included. |
+| Build fails mentioning `category` | An invalid category | It has to be one of the categories listed in the `EventItem` type in `data.ts`, capitals included. |
 | Event page shows "404 not found" | Slug mismatch | The address has to match the `slug` exactly. |
 | Changes are not appearing | The file is not saved, or the server stopped | Press `Command` and `S`, then check the terminal is still running. Restart with `npm run dev`. |
+| The Join button says "Registration opens soon" | The event has no `joinUrl` or `joinLinks` | Add the form link. See "Registration links" in section 6. |
+| Browser says "unencrypted connection" or "Not secure" | You are on an `http://` address | On `http://localhost:3000` this is normal: the preview never leaves your computer, so nothing needs fixing. On the real site, the site now redirects every `http://` visit to `https://` by itself (`proxy.ts`). Also switch on **Always Use HTTPS** in Cloudflare, under SSL/TLS then Edge Certificates. |
+| The live site says "too many redirects" | Your host passes traffic on without saying it was secure | Delete `proxy.ts`, commit and push. Then turn on **Always Use HTTPS** in Cloudflare instead. |
+| The cookie banner shows up on every visit | The browser is blocking cookies, or clearing them on close | Nothing to fix on the site. It is asking because it cannot remember the answer. |
 | Contact form says it could not send | Email not configured, or wrong credentials | See section 16. Check the app password, not the account password. |
 | Everything is broken and you do not know why | You changed something you did not mean to | Press `Command` and `Z` repeatedly to undo. If the project is on GitHub, you can also revert to the last working version there. |
 
@@ -694,7 +765,7 @@ If it is not set up yet, the one time steps are: put the project on GitHub, crea
 
 ---
 
-## 19. One page cheat sheet
+## 20. One page cheat sheet
 
 **Everyday commands**
 
@@ -709,6 +780,7 @@ npm run build          # check for errors before publishing
 | I want to change | Go to |
 |---|---|
 | An event, its date, its details | `lib/data.ts`, the `events` list |
+| Registration form links for an event | `lib/data.ts`, that event's `joinUrl` or `joinLinks` |
 | Sponsors on an event | `lib/data.ts`, that event's `sponsors` |
 | itch.io and Instagram links after an event | `lib/data.ts`, that event's `outcomes` |
 | Gallery photos | `lib/data.ts`, the `gallery` list, plus files in `public/images/gallery/` |
@@ -720,6 +792,8 @@ npm run build          # check for errors before publishing
 | The scrolling words on the homepage | `components/Hero.tsx`, the `WORDS` list |
 | Section headings | The matching file in `app/` |
 | The logo | `public/images/logo.png` and `app/icon.png` |
+| The cookie policy text | `app/cookies/page.tsx` |
+| Google Analytics | `NEXT_PUBLIC_GA_ID` in `.env.local` and on your host |
 
 **Image sizes, from memory**
 
@@ -735,7 +809,7 @@ Everything under 400 KB. Filenames lowercase with hyphens, no spaces, no Turkish
 **The after every event checklist**
 
 - [ ] Change `status` to `"past"`
-- [ ] Delete `joinUrl`
+- [ ] Delete `joinUrl` or `joinLinks`
 - [ ] Add `attendeeCount` and `recapSummary`
 - [ ] Resize photos to 1600 on the long side, put them in `public/images/gallery/<event-slug>/`
 - [ ] Add them to `gallery` tagged with the event slug
@@ -743,5 +817,5 @@ Everything under 400 KB. Filenames lowercase with hyphens, no spaces, no Turkish
 - [ ] Add the `recapPhotos` line
 - [ ] Add `outcomes` with itch.io and Instagram links
 - [ ] Update the `milestones` numbers
-- [ ] Add the next event as `"upcoming"`
+- [ ] Add the next event as `"upcoming"`, with its registration form link
 - [ ] `npm run build` to check, then publish

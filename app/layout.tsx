@@ -9,6 +9,8 @@ import "@fontsource/plus-jakarta-sans/700.css";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CookieConsent from "@/components/CookieConsent";
+import Analytics from "@/components/Analytics";
 
 export const metadata: Metadata = {
   title: "Hack The Loop | Breaking the loop in the gaming industry",
@@ -29,6 +31,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <CookieConsent />
+        <Analytics />
       </body>
     </html>
   );

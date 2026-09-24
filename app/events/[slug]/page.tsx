@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { ItchIcon, InstagramIcon } from "@/components/SocialIcons";
 import ShareButton from "@/components/ShareButton";
-import { events } from "@/lib/data";
+import { events, getJoinLinks } from "@/lib/data";
 
 export function generateStaticParams() {
   return events.map((e) => ({ slug: e.slug }));
@@ -51,6 +51,7 @@ export default async function EventPage({
   if (!event) notFound();
 
   const isPast = event.status === "past";
+  const joinLinks = getJoinLinks(event);
   const dateLabel = event.endDate
     ? `${formatDate(event.date)} to ${formatDate(event.endDate)}`
     : formatDate(event.date);
@@ -117,25 +118,54 @@ export default async function EventPage({
               )}
             </>
           ) : (
-            <div className="mt-10 rounded-3xl border-3 border-(--color-ink) bg-(--color-green-100) p-8 text-center shadow-poster">
+            <div className="mt-10 rounded-3xl border-3 border-(--color-ink) bg-(--color-green-100) p-6 sm:p-8 text-center shadow-poster">
               <h2 className="font-display text-2xl sm:text-3xl font-bold mb-2">Come along</h2>
-              <p className="text-(--color-ink)/70 max-w-md mx-auto mb-6">
-                Free, open to every level, and limited on space. Grab your spot now.
-              </p>
-              <a
-                href={event.joinUrl ?? "#"}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-(--color-green-700) text-(--color-cream) border-3 border-(--color-ink) px-8 py-4 text-base font-bold shadow-poster transition-transform hover:-translate-y-1"
-              >
-                Join this event <ExternalLink size={18} />
-              </a>
+              {joinLinks.length > 0 ? (
+                <>
+                  <p className="text-(--color-ink)/70 max-w-md mx-auto mb-6">
+                    Free, open to every level, and limited on space. Grab your spot now.
+                  </p>
+                  <ul className="flex flex-wrap items-start justify-center gap-4">
+                    {joinLinks.map((link, i) => (
+                      <li key={link.url + link.label} className="flex flex-col items-center gap-2 max-w-full">
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={`inline-flex max-w-full items-center justify-center gap-2 rounded-full border-3 border-(--color-ink) px-7 sm:px-8 py-4 text-base font-bold shadow-poster transition-transform hover:-translate-y-1 ${
+                            i === 0
+                              ? "bg-(--color-green-700) text-(--color-cream)"
+                              : "bg-(--color-paper) text-(--color-ink)"
+                          }`}
+                        >
+                          <span className="text-balance">{link.label}</span>
+                          <ExternalLink size={18} className="shrink-0" />
+                        </a>
+                        {link.note && (
+                          <span className="text-xs font-semibold text-(--color-ink)/60 max-w-[16rem] text-balance">
+                            {link.note}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <>
+                  <p className="text-(--color-ink)/70 max-w-md mx-auto mb-5">
+                    Registration is not open yet. The form goes live here and on our Instagram as soon as it is ready.
+                  </p>
+                  <span className="inline-flex items-center gap-2 rounded-full border-3 border-dashed border-(--color-ink)/40 px-7 py-3.5 text-base font-bold text-(--color-ink)/55">
+                    Registration opens soon
+                  </span>
+                </>
+              )}
             </div>
           )}
         </div>
 
         {/* Sidebar */}
-        <aside className="lg:sticky lg:top-28 h-fit rounded-2xl border-3 border-(--color-ink) bg-(--color-cream) p-6 shadow-poster-sm">
+        <aside className="h-fit rounded-2xl border-3 border-(--color-ink) bg-(--color-cream) p-6 shadow-poster-sm">
           <span className="inline-flex rounded-full border-2 border-(--color-ink) bg-(--color-purple-500) text-(--color-cream) px-3.5 py-1 text-xs font-bold uppercase tracking-widest">
             {event.category}
           </span>

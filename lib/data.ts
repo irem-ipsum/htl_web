@@ -23,7 +23,6 @@ export const team: TeamMember[] = [
   { slug: "irem-a", name: "İrem A.", role: "Event Coordinator", bio: "Runs the jams, plans the events, thrives on a deadline.", image: "/images/team/yk-9.jpg", kind: "team" },
   { slug: "sena-y", name: "Sena Y.", role: "Volunteer", bio: "Events and Preprations Team", image: "/images/team/vol-10.jpg", kind: "volunteer" },
   { slug: "sude-b", name: "Sude B.", role: "Volunteer", bio: "Design Team", image: "/images/team/vol-11.jpg", kind: "volunteer" },
-  { slug: "selin-s", name: "Selin S.", role: "Volunteer", bio: "Design Team", image: "/images/team/vol-12-2.jpg", kind: "volunteer" },
   { slug: "seher-k", name: "Seher K.", role: "Volunteer", bio: "Design Team", image: "/images/team/vol-13.jpg", kind: "volunteer" },
   { slug: "sudenur-t", name: "Sudenur T.", role: "Volunteer", bio: "Content Writer", image: "/images/team/vol-14.jpg", kind: "volunteer" },
   { slug: "ipek-c", name: "İpek C.", role: "Volunteer", bio: "Content Writer", image: "/images/team/vol-15.jpg", kind: "volunteer" },
@@ -58,6 +57,17 @@ export const gallery: GalleryPhoto[] = [
   { src: "/images/gallery/iwd-2026/iwd26-5.jpg", alt: "Teams presenting their games at the IWD Jam", eventSlug: "iwd-game-jam-2026" },
   { src: "/images/gallery/iwd-2026/iwd26-6.jpg", alt: "Members catching up between IWD Jam sessions", eventSlug: "iwd-game-jam-2026" },
   { src: "/images/gallery/iwd-2026/iwd26-7.jpg", alt: "The whole group at the close of the IWD Game Jam", eventSlug: "iwd-game-jam-2026" },
+  { src: "/images/gallery/drink-draw-1/dd1-1.jpg", alt: "Members gathering around the table for the event", eventSlug: "drink-and-draw-1" },
+  { src: "/images/gallery/drink-draw-1/dd1-2.jpg", alt: "A cool art work", eventSlug: "drink-and-draw-1" },
+  { src: "/images/gallery/drink-draw-1/dd1-3.jpg", alt: "Members drawing", eventSlug: "drink-and-draw-1" },
+  { src: "/images/gallery/drink-draw-1/dd1-4.jpg", alt: "Our team in a group photo", eventSlug: "drink-and-draw-1" },
+  { src: "/images/gallery/drink-draw-1/dd1-5.jpg", alt: "One of our member's drawing on the progress", eventSlug: "drink-and-draw-1" },
+  { src: "/images/gallery/drink-draw-1/dd1-6.jpg", alt: "People discussing and drawing together", eventSlug: "drink-and-draw-1" },
+  { src: "/images/gallery/drink-draw-1/dd1-7.jpg", alt: "Some chatting", eventSlug: "drink-and-draw-1" },
+  { src: "/images/gallery/pocket-jam-1/pj1-1.jpg", alt: "Members filling our mural for the day", eventSlug: "rainbow-pocket-jam" },
+  { src: "/images/gallery/pocket-jam-1/pj1-2.jpg", alt: "Members filling our mural for the day on another angle", eventSlug: "rainbow-pocket-jam" },
+  { src: "/images/gallery/pocket-jam-1/pj1-3.jpg", alt: "The mural itself", eventSlug: "rainbow-pocket-jam" },
+  { src: "/images/gallery/pocket-jam-1/pj1-4.jpg", alt: "Members discussing about the boardgame they're working on", eventSlug: "rainbow-pocket-jam" }
 ];
 
 /**
@@ -66,12 +76,20 @@ export const gallery: GalleryPhoto[] = [
  */
 export type EventSponsor = { name: string; url?: string; logo?: string };
 
+
 /** What came out of a past event: itch.io pages, Instagram posts, photo sets, write ups. */
 export type EventOutcome = {
   label: string;
   url: string;
   kind?: "itch" | "instagram" | "photos" | "link";
 };
+
+/**
+ * A registration button on an upcoming event. Each event carries its own
+ * links, so every jam or meetup can point at its own Google Form.
+ * `note` is an optional short line shown under the button.
+ */
+export type JoinLink = { label: string; url: string; note?: string };
 
 export type EventItem = {
   slug: string;
@@ -85,7 +103,10 @@ export type EventItem = {
   description: string;
   cover: string;
   status: "upcoming" | "past";
+  /** One registration link. The button reads "Join this event". */
   joinUrl?: string;
+  /** Several registration buttons, for example participants and mentors. Used instead of joinUrl. */
+  joinLinks?: JoinLink[];
   recapPhotos?: string[];
   recapSummary?: string;
   attendeeCount?: number;
@@ -226,7 +247,50 @@ export const events: EventItem[] = [
       { label: "Photos from the evening", url: "/gallery", kind: "photos" },
     ],
   },
+  {
+    slug: "women-game-jam-2026",
+    title: "Women Game Jam 2026",
+    date: "2026-10-16",
+    endDate: "2026-10-18",
+    time: "3 day jam, Fri 18:00 to Sun 18:00",
+    location: "İstinye University Vadi İstanbul Campus, İstanbul",
+    category: "Game Jam",
+    summary: "Woman Game Jam 2026 is here!",
+    description: "Got a game idea you've always wanted to make? This is your chance. Join Hack the Loop's Women Game Jam: team up, create a game from scratch and have fun building it with other women in tech and games. You don't need any experience. Coders, artists, designers, writers, musicians and curious beginners are all welcome.",
+    cover: "/images/events/wgj-2026.jpg",
+    status: "upcoming",
+    joinLinks: [{ label: "Register Now!", url: "https://www.womengamejam.org/register", note: "Spots are limited" }],
+    sponsors: [{ name: "Woman Game Jam", url: "https://www.womengamejam.org/", logo: "/images/sponsors/wgj-logo.png" }],
+  },
+  {
+    slug: "tea-time-1",
+    title: "Tea Time",
+    date: "2026-09-26",
+    time: "14:00 to 18:00",
+    location: "Coado Coffee, İstanbul",
+    category: "Meetup",
+    summary: "Want some tea?",
+    description: "A new academic year is here, and we're kicking it off the chill way. Join us in Kadıköy for tea, coffee and good conversations. You can meet new people, catch up with old friends and start the year with us.",
+    cover: "/images/events/tea-1.jpeg",
+    status: "upcoming",
+    joinLinks: [{ label: "Join Now!", url: "https://forms.gle/Bq4nrZp7BrRPNrcx7", note: "Spots are limited" }],
+    sponsors: [{ name: "Coado Coffee", url: "https://www.instagram.com/coadocoffee?utm_source=ig_web_button_share_sheet&stkn=ZDNlZDc0MzIxNw==", logo: "/images/sponsors/COADO.png" }],
+  },
 ];
+
+/**
+ * The registration buttons for an event: its joinLinks if it has any,
+ * otherwise a single button from joinUrl, otherwise none. Blank links are
+ * ignored, so a half filled entry never produces a dead button.
+ */
+export function getJoinLinks(event: EventItem): JoinLink[] {
+  const listed = (event.joinLinks ?? []).filter((l) => l.url && l.url.trim());
+  if (listed.length) return listed;
+  if (event.joinUrl && event.joinUrl.trim()) {
+    return [{ label: "Join this event", url: event.joinUrl.trim() }];
+  }
+  return [];
+}
 
 export const upcomingEvents = events
   .filter((e) => e.status === "upcoming")

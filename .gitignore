@@ -45,4 +45,4 @@ next-env.d.ts
 _originals/
 
 # Transfer archive, safe to delete.
-_transfer.tgz
+_transfer*.tgz

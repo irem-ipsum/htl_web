@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Mail, Link2 } from "lucide-react";
 import { siteContent } from "@/lib/data";
 import { InstagramIcon, LinkedInIcon, TikTokIcon } from "@/components/SocialIcons";
+import CookieSettingsButton from "@/components/CookieSettingsButton";
 
 export default function Footer() {
   return (
@@ -63,7 +64,13 @@ export default function Footer() {
       <div className="border-t border-(--color-cream)/10">
         <div className="mx-auto max-w-7xl px-5 sm:px-8 py-5 text-xs text-(--color-cream)/50 flex flex-col sm:flex-row gap-2 justify-between">
           <span>© {new Date().getFullYear()} Hack The Loop. No fees, no experience required.</span>
-          <span>Built by our volunteers 💜</span>
+          <span className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <Link href="/cookies" className="hover:text-(--color-purple-300) underline-offset-2 hover:underline">
+              Cookie policy
+            </Link>
+            <CookieSettingsButton className="hover:text-(--color-purple-300) underline-offset-2 hover:underline cursor-pointer" />
+            <span>Built by our volunteers 💜</span>
+          </span>
         </div>
       </div>
     </footer>
